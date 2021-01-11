@@ -1,12 +1,12 @@
+@file:Suppress("DEPRECATION")
+
 package com.erwandy.framework.basic_mvvm_retrofit.ui.main.view
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.erwandy.framework.basic_mvvm_retrofit.R
+import androidx.lifecycle.ViewModelProviders
 import com.erwandy.framework.basic_mvvm_retrofit.data.repository.InfoRepository
 import com.erwandy.framework.basic_mvvm_retrofit.databinding.ActivityMainBinding
 import com.erwandy.framework.basic_mvvm_retrofit.ui.base.InfoFactory
@@ -28,18 +28,22 @@ class MainActivity : AppCompatActivity() {
 
         infoRepository = InfoRepository()
         infoFactory = InfoFactory(infoRepository)
-        infoViewModel = ViewModelProvider(this, infoFactory).get(InfoViewModel::class.java)
+        infoViewModel = ViewModelProviders.of(this, infoFactory).get(InfoViewModel::class.java)
 
+        val dialog = ProgressDialog.show(
+                this, "",
+                "Loading. Please wait...", true
+        )
+        dialog.hide()
+        infoViewModel.userInfoLiveData.observe(this, Observer {
+            binding.info.text = it
+            if(dialog.isShowing){
+                dialog.hide()
+            }
+        })
         binding.sendData.setOnClickListener {
-            val dialog = ProgressDialog.show(
-                    this, "",
-                    "Loading. Please wait...", true
-            )
             dialog.show()
-            infoViewModel.callInfo().observe(this, Observer {
-                dialog.dismiss()
-                binding.info.text = it
-            })
+            infoViewModel.callInfo()
         }
     }
 }
