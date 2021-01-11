@@ -22,8 +22,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -32,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         infoFactory = InfoFactory(infoRepository)
         infoViewModel = ViewModelProvider(this, infoFactory).get(InfoViewModel::class.java)
 
-        binding.getInfo.setOnClickListener {
+        binding.sendData.setOnClickListener {
             val dialog = ProgressDialog.show(
                     this, "",
                     "Loading. Please wait...", true
@@ -40,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             dialog.show()
             infoViewModel.callInfo().observe(this, Observer {
                 dialog.dismiss()
-                Toast.makeText(this, "user name:${it.userName} user age:${it.userAge}", Toast.LENGTH_SHORT).show()
+                binding.info.text = it
             })
         }
     }
